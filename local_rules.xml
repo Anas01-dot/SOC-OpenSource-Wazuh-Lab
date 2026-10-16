@@ -1,0 +1,73 @@
+<!--
+  Local Wazuh detection rules for the home SOC lab.
+  Sanitized: no real IPs, hostnames, or credentials. API keys for VirusTotal/MISP
+  live only in ossec.conf on the manager, which is intentionally NOT included here.
+-->
+
+<group name="local,custom,fim,threat_intel,">
+
+  <!-- ===== Firewall logging (pfSense, WAN/LAN/SOC segmentation) ===== -->
+  <rule id="100100" level="5">
+    <description>pfsense:firewall blocked a packet</description>
+  </rule>
+
+  <!-- ===== File Integrity Monitoring: watched directory on the Kali agent ===== -->
+  <!-- MITRE: file arriving in the monitored directory represents payload delivery -->
+  <rule id="100200" level="7">
+    <description>File modified in /RH/ directory.</description>
+    <mitre>
+      <id>T1105</id>
+    </mitre>
+  </rule>
+
+  <rule id="100201" level="7">
+    <description>File added to /RH/ directory.</description>
+    <mitre>
+      <id>T1105</id>
+    </mitre>
+  </rule>
+
+  <!-- ===== VirusTotal active response (reaction, not adversary technique - no MITRE tag) ===== -->
+  <rule id="100092" level="12">
+    <description>$(parameters.program) removed threat located at $(parameters.alert.data.virustotal.source.file)</description>
+  </rule>
+
+  <rule id="100093" level="12">
+    <description>Error removing threat located at $(parameters.alert.data.virustotal.source.file)</description>
+  </rule>
+
+  <!-- ===== MISP hash-lookup integration (see MISP/wazuh-integration tutorial) ===== -->
+  <rule id="100800" level="0">
+    <description>MISP: file hash check</description>
+  </rule>
+
+  <rule id="100801" level="0">
+    <if_sid>100800</if_sid>
+    <description>MISP: file hash not found</description>
+  </rule>
+
+  <!-- MITRE: independent confirmation of payload delivery via threat intel match -->
+  <rule id="100802" level="12">
+    <if_sid>100800</if_sid>
+    <description>MISP: file hash matched</description>
+    <mitre>
+      <id>T1105</id>
+    </mitre>
+  </rule>
+
+  <rule id="100803" level="10">
+    <if_sid>100800</if_sid>
+    <description>MISP ERROR: Invalid MISP credentials, check the api_key setting</description>
+  </rule>
+
+  <rule id="100804" level="10">
+    <if_sid>100800</if_sid>
+    <description>MISP ERROR: Rate limit exceeded</description>
+  </rule>
+
+  <rule id="100805" level="10">
+    <if_sid>100800</if_sid>
+    <description>MISP ERROR: $(misp_file_hashes.description)</description>
+  </rule>
+
+</group>
