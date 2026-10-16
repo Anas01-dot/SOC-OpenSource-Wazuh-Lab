@@ -97,10 +97,9 @@ The laboratory was validated end-to-end using the EICAR test file and network si
 ========================================================================
 📂 REPOSITORY STRUCTURE
 ========================================================================
-SOC-OpenSource-Lab/
-├── architecture/          # Network diagrams and logical schemas
-├── configs/               # Sample configurations (ossec.conf, local_rules.xml)
-├── scripts/               # Integration scripts (custom-misp, active-response)
+SOC-OpenSource-Wazuh-Lab/
+├── local_rules.xml        # Custom Wazuh detection rules 
+├── SOC_Lab_Project_Report.docx # Full project documentation / report
 └── README.md              # Complete project documentation
 
 ========================================================================
